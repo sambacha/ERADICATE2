@@ -250,9 +250,8 @@ int main(int argc, char * * argv) {
 		}
 
 		trim(strInitCode);
-		const std::string strAddressBinary = parseHexadecimalBytes(strAddress);
-		const std::string strInitCodeBinary = parseHexadecimalBytes(strInitCode);
-		const std::string strInitCodeDigest = keccakDigest(strInitCodeBinary);
+		const std::string strAddressBinary = keccakDigest(parseHexadecimalBytes(strAddress)).substr(12);
+		const std::string strInitCodeDigest = keccakDigest(parseHexadecimalBytes(strInitCode));
 		const std::string strPreprocessorInitStructure = makePreprocessorInitHashExpression(strAddressBinary, strInitCodeDigest);
 
 		mode mode = ModeFactory::benchmark();
