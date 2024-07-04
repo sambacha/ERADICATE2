@@ -179,13 +179,13 @@ std::string makePreprocessorInitHashExpression(const char* nft_address, const st
 
 const char* hexStringToConstChar(const std::string& hex) {
     size_t length = hex.length();
-    char* charArray = new char[length / 2 + 1]; // массив для хранения байтов и символ конца строки
+    char* charArray = new char[length / 2 + 1];
     for (size_t i = 0; i < length; i += 2) {
         std::string byteString = hex.substr(i, 2);
         char byte = (char) strtol(byteString.c_str(), nullptr, 16);
         charArray[i / 2] = byte;
     }
-    charArray[length / 2] = '\0'; // добавляем символ конца строки
+    charArray[length / 2] = '\0';
     return charArray;
 }
 
@@ -237,7 +237,7 @@ int main(int argc, char * * argv) {
 		argp.addSwitch('W', "work-max", worksizeMax);
 		argp.addSwitch('S', "size", size);
 		argp.addSwitch('A', "address", strAddress);
-		argp.addSwitch('B', "address", bytecode_hash);
+		argp.addSwitch('B', "address", bytecode_hash); // create2 PROXY_CHILD_BYTECODE hash
 		argp.addSwitch('D', "address", nft_address); // create3 deployer address
 		argp.addSwitch('I', "init-code", strInitCode);
 		argp.addSwitch('i', "init-code-file", strInitCodeFile);
