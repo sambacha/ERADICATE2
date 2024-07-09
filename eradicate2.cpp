@@ -141,14 +141,12 @@ void trim(std::string & s) {
 	}
 }
 
-std::string makePreprocessorInitHashExpression(const std::string & strAddressBinary, const std::string & strInitCodeDigest) {
+std::string makePreprocessorInitHashExpression(const char* nft_address, const std::string & strAddressBinary, const char* bytecode_hash) {
 	std::random_device rd;
 	std::mt19937_64 eng(rd());
 	std::uniform_int_distribution<unsigned int> distr; // C++ requires integer type: "C2338	note : char, signed char, unsigned char, int8_t, and uint8_t are not allowed"
-	ethhash h = { 0 };
+	ethhash h = { {0} };
 
-	// const char* nft_address = "\x5F\xbD\xB2\x31\x56\x78\xaf\xec\xb3\x67\xf0\x32\xd9\x3F\x64\x2f\x64\x18\x0a\xa3";
-	const char* nft_address = "\x1A\xDD\x4E\x55\xec\xEf\xfd\x79\x5B\x01\xd2\x22\x03\xD2\x80\xc9\x3A\x2F\x1d\xc3";
 	h.b[0] = 0xff;
 	for (int i = 0; i < 20; ++i) {
 		h.b[i + 1] = nft_address[i];
@@ -161,7 +159,6 @@ std::string makePreprocessorInitHashExpression(const std::string & strAddressBin
 		h.b[i + 21] = strAddressBinary[i - 12];
 	}
 
-	const char* bytecode_hash = "\x21\xc3\x5d\xbe\x1b\x34\x4a\x24\x88\xcf\x33\x21\xd6\xce\x54\x2f\x8e\x9f\x30\x55\x44\xff\x09\xe4\x99\x3a\x62\x31\x9a\x49\x7c\x1f";
 	for (int i = 0; i < 32; ++i) {
 		h.b[i + 53] = bytecode_hash[i];
 	}
@@ -178,6 +175,18 @@ std::string makePreprocessorInitHashExpression(const std::string & strAddressBin
 	}
 
 	return oss.str();
+}
+
+const char* hexStringToConstChar(const std::string& hex) {
+    size_t length = hex.length();
+    char* charArray = new char[length / 2 + 1];
+    for (size_t i = 0; i < length; i += 2) {
+        std::string byteString = hex.substr(i, 2);
+        char byte = (char) strtol(byteString.c_str(), nullptr, 16);
+        charArray[i / 2] = byte;
+    }
+    charArray[length / 2] = '\0';
+    return charArray;
 }
 
 int main(int argc, char * * argv) {
@@ -203,6 +212,8 @@ int main(int argc, char * * argv) {
 		size_t worksizeMax = 0; // Will be automatically determined later if not overriden by user
 		size_t size = 16777216;
 		std::string strAddress;
+		std::string bytecode_hash = "21c35dbe1b344a2488cf3321d6ce542f8e9f305544ff09e4993a62319a497c1f";
+		std::string nft_address = "1ADD4E55ecEffd795B01d22203D280c93A2F1dc3";
 		std::string strInitCode;
 		std::string strInitCodeFile;
 
@@ -225,7 +236,9 @@ int main(int argc, char * * argv) {
 		argp.addSwitch('w', "work", worksizeLocal);
 		argp.addSwitch('W', "work-max", worksizeMax);
 		argp.addSwitch('S', "size", size);
-		argp.addSwitch('A', "address", strAddress);
+		argp.addSwitch('A', "caller-address", strAddress);
+		argp.addSwitch('B', "bytecode-hash", bytecode_hash); // create2 PROXY_CHILD_BYTECODE hash
+		argp.addSwitch('D', "deployer-address", nft_address); // create3 deployer address
 		argp.addSwitch('I', "init-code", strInitCode);
 		argp.addSwitch('i', "init-code-file", strInitCodeFile);
 
@@ -252,7 +265,9 @@ int main(int argc, char * * argv) {
 		trim(strInitCode);
 		const std::string strAddressBinary = keccakDigest(parseHexadecimalBytes(strAddress)).substr(12);
 		const std::string strInitCodeDigest = keccakDigest(parseHexadecimalBytes(strInitCode));
-		const std::string strPreprocessorInitStructure = makePreprocessorInitHashExpression(strAddressBinary, strInitCodeDigest);
+		const char* nft_address_chars = hexStringToConstChar(nft_address);
+		const char* bytecode_hash_chars = hexStringToConstChar(bytecode_hash);
+		const std::string strPreprocessorInitStructure = makePreprocessorInitHashExpression(nft_address_chars, strAddressBinary, bytecode_hash_chars);
 
 		mode mode = ModeFactory::benchmark();
 		if (bModeBenchmark) {
