@@ -238,7 +238,7 @@ int main(int argc, char * * argv) {
 		argp.addSwitch('S', "size", size);
 		argp.addSwitch('A', "address", strAddress);
 		argp.addSwitch('B', "bytecode-hash", bytecode_hash); // create2 PROXY_CHILD_BYTECODE hash
-		argp.addSwitch('D', "address", nft_address); // create3 deployer address
+		argp.addSwitch('D', "deployer-address", nft_address); // create3 deployer address
 		argp.addSwitch('I', "init-code", strInitCode);
 		argp.addSwitch('i', "init-code-file", strInitCodeFile);
 
