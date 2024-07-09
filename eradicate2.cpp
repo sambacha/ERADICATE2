@@ -236,7 +236,7 @@ int main(int argc, char * * argv) {
 		argp.addSwitch('w', "work", worksizeLocal);
 		argp.addSwitch('W', "work-max", worksizeMax);
 		argp.addSwitch('S', "size", size);
-		argp.addSwitch('A', "address", strAddress);
+		argp.addSwitch('A', "caller-address", strAddress);
 		argp.addSwitch('B', "bytecode-hash", bytecode_hash); // create2 PROXY_CHILD_BYTECODE hash
 		argp.addSwitch('D', "deployer-address", nft_address); // create3 deployer address
 		argp.addSwitch('I', "init-code", strInitCode);
